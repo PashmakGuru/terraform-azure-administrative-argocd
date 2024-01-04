@@ -1,0 +1,59 @@
+name: Terraform CI
+on:
+  push:
+    branches:
+    - main
+    - dev
+  pull_request:
+
+jobs:
+  tflint:
+    name: Lint Terraform
+    runs-on: ubuntu-22.04
+    steps:
+    -
+      uses: actions/checkout@v3
+      name: Checkout source code
+    -
+      uses: terraform-linters/setup-tflint@v3
+      name: Setup TFLint
+      with:
+        tflint_version: v0.44.1
+    -
+      name: Show version
+      run: tflint --version
+    -
+      name: Init TFLint
+      run: tflint --init
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+    -
+      name: Run TFLint
+      run: tflint -f compact
+
+  format:
+    runs-on: ubuntu-22.04
+    name: Format Terraform
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+    -
+      name: Checkout
+      uses: actions/checkout@v3
+    -
+      name: Run terraform fmt
+      uses: dflook/terraform-fmt@v1
+    -
+      name: Create Pull Request
+      uses: peter-evans/create-pull-request@v5
+      with:
+        commit-message: "🔨 Run `terraform fmt`"
+        title: 🔨 Reformat Terraform Files
+        body: Update Terraform files to canonical format using `terraform fmt`
+        branch: refactor/terraform-fmt
+        # Delete PR branch if diff is resolved anyhow
+        delete-branch: true
+        labels: |
+          bot
+          kind/cleanup
