@@ -1,5 +1,7 @@
 # Azure Administrative ArgoCD
 
+[![Terraform CI](https://github.com/PashmakGuru/terraform-azure-administrative-argocd/actions/workflows/terraform-ci.yaml/badge.svg)](https://github.com/PashmakGuru/terraform-azure-administrative-argocd/actions/workflows/terraform-ci.yaml)
+
 ## Overview
 This Terraform configuration is designed to automate the deployment and configuration of Argo CD on Azure Kubernetes Service (AKS). It simplifies the process of setting up Argo CD with the necessary Azure integrations.
 
@@ -17,3 +19,8 @@ This Terraform configuration is designed to automate the deployment and configur
 
 ## Example
 For usage examples, please refer to the [`example`](./example) directory. This directory will provide practical examples of how to use this Terraform module in your projects.
+
+## Workflows
+| Name | Description |
+|---|---|
+| [terraform-ci.yaml](.github/workflows/terraform-ci.yaml) | A workflow for linting and auto-formatting Terraform code. Triggered by pushes to  `main` and `dev` branches or on pull requests, it consists of two jobs: `tflint` for lint checks and  `format` for code formatting and automated pull requests. |
