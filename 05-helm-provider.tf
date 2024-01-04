@@ -26,37 +26,29 @@ resource "azurerm_federated_identity_credential" "federated_credential" {
   subject             = "system:serviceaccount:${var.argocd_namespace}:argocd"
 }
 
-locals {
-  kuber_host = data.azurerm_kubernetes_cluster.this.kube_config.0.host
-  kuber_client_cert = base64decode(data.azurerm_kubernetes_cluster.this.kube_config.0.client_certificate)
-  kuber_client_key = base64decode(data.azurerm_kubernetes_cluster.this.kube_config.0.client_key)
-  kuber_ca_cert = base64decode(data.azurerm_kubernetes_cluster.this.kube_config.0.cluster_ca_certificate)
-}
-
-provider "helm" {
-  kubernetes {
-    host                   = local.kuber_host
-    client_certificate     = local.kuber_client_cert
-    client_key             = local.kuber_client_key
-    cluster_ca_certificate = local.kuber_ca_cert
-  }
-}
-
-provider "kubernetes" {
-    host                   = local.kuber_host
-    client_certificate     = local.kuber_client_cert
-    client_key             = local.kuber_client_key
-    cluster_ca_certificate = local.kuber_ca_cert
-}
-
-resource "helm_release" "cert_manager" {
+resource "helm_release" "argocd" {
   name = "argocd"
 
   repository       = "https://argoproj.github.io/argo-helm"
-  chart            = "argocd"
+  chart            = "argo-cd"
   namespace        = var.argocd_namespace
   create_namespace = true
   version          = var.argocd_version
+
+  set {
+    name = "configs.params.server\\.insecure"
+    value = true
+  }
+
+  set {
+    name = "server.ingress.enabled"
+    value = true
+  }
+
+  set {
+    name = "server.ingress.ingressClassName"
+    value = "nginx"
+  }
 }
 
 resource "kubernetes_secret" "argocd_clusters" {
@@ -74,7 +66,8 @@ resource "kubernetes_secret" "argocd_clusters" {
 
   data = {
     name =  data.azurerm_kubernetes_cluster.this.name
-    server = local.kuber_host
+    server = var.administrative_kubernetes_host
+    # TODO: Use caData (probably accessed via differenet providers) and enable TLS.
     config = <<-EOT
       {
       "execProviderConfig": {
@@ -91,8 +84,7 @@ resource "kubernetes_secret" "argocd_clusters" {
         "apiVersion": "client.authentication.k8s.io/v1beta1"
       },
       "tlsClientConfig": {
-        "insecure": false,
-        "caData": "${ base64encode(local.kuber_ca_cert) }"
+        "insecure": true,
       }
     }
     EOT

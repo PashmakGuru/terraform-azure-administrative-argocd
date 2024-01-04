@@ -20,3 +20,12 @@ variable "argocd_namespace" {
     type = string
     default = "argocd"
 }
+
+variable "administrative_kubernetes_host" {
+    type = string
+}
+
+variable "ingress_class_name" {
+    type = string
+    default = "nginx"
+}
