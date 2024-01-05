@@ -5,6 +5,11 @@
 ## Overview
 This Terraform configuration is designed to automate the deployment and configuration of Argo CD on Azure Kubernetes Service (AKS). It simplifies the process of setting up Argo CD with the necessary Azure integrations.
 
+### Terraform Architecture
+```mermaid
+%%tfmermaid
+```
+
 ## Features
 - **Kubernetes Cluster Data Retrieval**: Fetches data about an existing AKS cluster.
 - **User-Assigned Identity Creation**: Sets up a user-assigned identity for Argo CD.
@@ -23,4 +28,4 @@ For usage examples, please refer to the [`example`](./example) directory. This d
 ## Workflows
 | Name | Description |
 |---|---|
-| [terraform-ci.yaml](.github/workflows/terraform-ci.yaml) | A workflow for linting and auto-formatting Terraform code. Triggered by pushes to  `main` and `dev` branches or on pull requests, it consists of two jobs: `tflint` for lint checks and  `format` for code formatting and automated pull requests. |
+| [terraform-ci.yaml](.github/workflows/terraform-ci.yaml) | A workflow for linting and auto-formatting Terraform code. Triggered by pushes to  `main` and `dev` branches or on pull requests, it consists of two jobs: `tflint` for lint checks, `format` for code formatting and submit a PR, and `tfmermaid` to update architecture graph and submit a PR. |

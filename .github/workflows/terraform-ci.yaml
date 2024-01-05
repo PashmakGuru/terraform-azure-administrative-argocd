@@ -57,3 +57,30 @@ jobs:
         labels: |
           bot
           kind/cleanup
+
+  tfmermaid:
+    runs-on: ubuntu-22.04
+    name: Update Terraform Diagram
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+    -
+      name: Checkout
+      uses: actions/checkout@v3
+    - uses: asannou/tfmermaid-action@v1
+      with:
+        file: README.md
+    -
+      name: Create Pull Request
+      uses: peter-evans/create-pull-request@v5
+      with:
+        commit-message: "📊 Generate Terraform diagrams using `tfmermaid`"
+        title: "📊 Generate Terraform Diagrams"
+        body: Update Terraform diagrams in README using `tfmermaid-action`
+        branch: refactor/tfmermaid
+        # Delete PR branch if diff is resolved anyhow
+        delete-branch: true
+        labels: |
+          bot
+          kind/cleanup
