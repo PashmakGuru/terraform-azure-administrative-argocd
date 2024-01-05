@@ -8,6 +8,57 @@ This Terraform configuration is designed to automate the deployment and configur
 ### Terraform Architecture
 ```mermaid
 %%tfmermaid
+%%{init:{"theme":"default","themeVariables":{"lineColor":"#6f7682","textColor":"#6f7682"}}}%%
+flowchart LR
+classDef r fill:#5c4ee5,stroke:#444,color:#fff
+classDef v fill:#eeedfc,stroke:#eeedfc,color:#5c4ee5
+classDef ms fill:none,stroke:#dce0e6,stroke-width:2px
+classDef vs fill:none,stroke:#dce0e6,stroke-width:4px,stroke-dasharray:10
+classDef ps fill:none,stroke:none
+classDef cs fill:#f7f8fa,stroke:#dce0e6,stroke-width:2px
+subgraph "n0"["Authorization"]
+n1["azurerm_federated_identity_credential.<br/>federated_credential"]:::r
+n2["azurerm_user_assigned_identity.<br/>argocd"]:::r
+end
+class n0 cs
+subgraph "n3"["Base"]
+n4{{"data.<br/>azurerm_client_config.<br/>current"}}:::r
+n5{{"data.<br/>azurerm_resource_group.<br/>this"}}:::r
+end
+class n3 cs
+subgraph "n6"["Container"]
+n7{{"data.<br/>azurerm_kubernetes_cluster.<br/>this"}}:::r
+end
+class n6 cs
+n8["helm_release.argocd"]:::r
+subgraph "n9"["core/v1"]
+na["kubernetes_secret.<br/>argocd_clusters"]:::r
+end
+class n9 cs
+subgraph "nb"["Input Variables"]
+nc(["var.<br/>administrative_kubernetes_host"]):::v
+nd(["var.argocd_identity_name"]):::v
+ne(["var.argocd_namespace"]):::v
+nf(["var.argocd_version"]):::v
+ng(["var.ingress_class_name"]):::v
+nh(["var.kubernetes_cluster_name"]):::v
+ni(["var.<br/>kubernetes_cluster_resource_group_name"]):::v
+end
+class nb vs
+n2-->n1
+n7-->n1
+ne--->n1
+n5-->n2
+nd--->n2
+n5-->n7
+nh--->n7
+ni--->n5
+ne--->n8
+nf--->n8
+n2-->na
+n4-->na
+n7-->na
+nc--->na
 ```
 
 ## Features
